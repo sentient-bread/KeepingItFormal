@@ -1,17 +1,32 @@
 -- English --
-data Eng = CN String  | Tm String  | IV String
-         | IAV String | TV String  | StV String
-         | ItV String | SmA String | Prep String -- basic categories
+data Eng = CN String      | Tm String  | Pron Int | IV String
+        -- (common nouns)   (terms)      (pronouns) (intrans. v)
+         | IAV String | TV String      | StV String
+        -- (adverbs)    (trans. verbs)   (sent-taking verbs)
+         | ItV String             | SmA String |
+        -- (intrans-taking verbs)   (sent-modifying adv)
+         | Prep String -- basic categories
+        -- (prepositions)
          | F0 Eng | F1 Eng | F2 Eng -- CNs (every, the, a)
+        -- :: CN -> Tm
          | F3 Int Eng Eng -- CN, T ()
+        -- :: Int -> CN -> T -> T (replace pronoun w. CN)
          | F4 Eng Eng -- Term, IV (S-V)
+        -- :: Tm -> IV -> T (subject-verb)
          | F5 Eng Eng -- TV, Term (V-O); Prep Term (PP)
+        -- :: TV -> Tm -> IV (verb-object)
+        -- :: Prep -> Tm -> IAV (prep-object)
          | F6 Eng Eng -- StV, T ; ItV, IV
+        -- :: StV -> T -> IV (belives/thinks that T)
+        -- :: ItV -> IV -> IV (tries to IV)
          | F7 Eng Eng -- SmA, T
+        -- :: SmA -> T -> T (necessarily, possibly T)
          | F8 Eng Eng | F9 Eng Eng -- Term, T, IV (and,or)
+        -- :: a -> a -> a
          | F10 Int Eng Eng -- Term, CN ; Term, T ; Term , IVerb (sub)
          | F11 Eng Eng | F12 Eng Eng | F13 Eng Eng
          | F14 Eng Eng | F15 Eng Eng -- Term, IV (tenses S-V)
+        -- :: Tm -> IV -> T
               deriving Show
 
 transl :: Eng -> LExpr -- all expressions

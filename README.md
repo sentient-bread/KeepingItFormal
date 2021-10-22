@@ -14,4 +14,7 @@ The types used in the description of English syntax and their symbols are:
 * `IAV` : adverbs for intrans. verbs ("slowly", "rapidly")
 * `TV` : transitive verbs ("see", "like")
 * `T` : sentences (yeah I don't know Montague said it)
-
+* `StV` : sentence-taking verb ("believe", "think")
+* `ItV` : intransitive verb-taking verbs ("try")
+* `SmA` : sentence-modifying adverbs ("necessarily", "possibly")
+* `Prep` : prepositions ("in", "about")
