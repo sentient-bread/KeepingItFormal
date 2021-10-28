@@ -60,7 +60,7 @@ data LExpr = LCon String | LVar Char -- constants and vars (any)
            | Eql  LExpr LExpr        -- equal              (t)
            | Not  LExpr
            | And  LExpr LExpr | Or LExpr LExpr
-           | Eqv LExpr LExpr  | Impl LExpr -- binary ops   (t)
+           | Eqv LExpr LExpr  | Impl LExpr LExpr -- binary ops   (t)
            | Forall LExpr LExpr
            | Exists LExpr LExpr      -- quantifications    (t)
            | Necs LExpr              -- necessary          (t)
