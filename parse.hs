@@ -133,6 +133,7 @@ parseIV n lex = case (parseSIV n lex) of
 
 parseIAV :: Int -> [String] -> Maybe (Eng, Int, [String])
 -- adverbs
+parseIAV n [] = Nothing
 parseIAV n lex@(v:vs) | v `elem` advs
                          = Just (IAV v, n, vs)
                       | v `elem` preps
