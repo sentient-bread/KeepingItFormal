@@ -150,31 +150,50 @@ parseCN n lex@(v:vs) | v `elem` cnouns
                           else Just (CN v, n, vs)
                      | otherwise = Nothing
 
-getF10 :: [Int] -> Eng -> Eng -> Eng
+getF10 :: [Int] -> (Char,Eng) -> Eng -> Eng
 -- substitution
-getF10 (n:ns) cnoun e = F10 n cnoun (replace n cnoun ns e)
+getF10 (n:ns) (g,term) e = F10 n term
+                               (foldr ($) e'
+                                      [replace (Pron i g) (Pron n ' ')
+                                          | i <- ns])
+                        where e' = (replace term (Pron n g) e)
 
-replace :: Int -> Eng -> [Int] -> Eng -> Eng
--- replacement
-replace n cnoun ns t = if (t == cnoun) then Pron n ' '
-                       else case t of
-                              F2 d c -> F2 d (replace n cnoun ns c)
-                              Pron i g -> if (i `elem` ns) then Pron n g
-                                          else t 
-                              F3 i c s -> F3 i c (replace n cnoun ns s)
-                              F4 s p -> F4 (replace n cnoun ns s)
-                                           (replace n cnoun ns p)
-                              F5 v o -> F5 (replace n cnoun ns v)
-                                           (replace n cnoun ns o)
-                              F6 v t -> F6 (replace n cnoun ns v)
-                                           (replace n cnoun ns t)
-                              F7 a t -> F7 (replace n cnoun ns a)
-                                           (replace n cnoun ns t)
-                              F8 a b -> F8 (replace n cnoun ns a)
-                                           (replace n cnoun ns b)
-                              F9 a b -> F9 (replace n cnoun ns a)
-                                           (replace n cnoun ns b)
-                              _ -> t
+replace :: Eng -> Eng -> Eng -> Eng
+replace x y t = if (t == x) then y
+                else case t of
+                       F2 a b -> F2 (replace x y a)
+                                    (replace x y b)
+                       F3 n a b -> F3 n a
+                                      (replace x y b)
+                       F4 a b -> F4 (replace x y a)
+                                    (replace x y b)
+                       F5 a b -> F5 (replace x y a)
+                                    (replace x y b)
+                       F6 a b -> F6 (replace x y a)
+                                    (replace x y b)
+                       F7 a b -> F7 (replace x y a)
+                                    (replace x y b)
+                       F8 a b -> F8 (replace x y a)
+                                    (replace x y b)
+                       F9 a b -> F9 (replace x y a)
+                                    (replace x y b)
+                       F10 n a b -> F10 n a
+                                        (replace x y b)
+                       F11 a b -> F11 (replace x y a)
+                                      (replace x y b)
+                       F12 a b -> F12 (replace x y a)
+                                      (replace x y b)
+                       F13 a b -> F13 (replace x y a)
+                                      (replace x y b)
+                       F14 a b -> F14 (replace x y a)
+                                      (replace x y b)
+                       F15 a b -> F15 (replace x y a)
+                                      (replace x y b)
+                       F16 a b -> F16 (replace x y a)
+                                      (replace x y b)
+                       F17 a b -> F17 (replace x y a)
+                                      (replace x y b)
+                       _ -> t
 
 cnouns :: [String]
 cnouns = ["man", "woman", "unicorn"]
