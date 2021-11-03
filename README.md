@@ -4,7 +4,7 @@ Project for the Computational Linguistics – 2 course at IIIT Hyderabad. An imp
 # TODO
 - [ ] Enforce stricter type-checking
 - [ ] Documentation generation
-- [ ] Parse negation, tenses
+- [x] Parse negation, tenses
 - [ ] Simplify IL expressions
 - [ ] Evaluator
 - [ ] Hardcode model
