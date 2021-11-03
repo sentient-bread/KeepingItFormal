@@ -239,7 +239,7 @@ iverbs :: [String]
 iverbs = ["talks", "walks", "talk", "walk", "talked", "walked"]
 
 tverbs :: [String]
-tverbs = ["sees", "seeks", "likes", "see", "seek", "like", "seen", "seeked", "liked"]
+tverbs = ["sees", "seeks", "likes", "see", "seek", "like", "seen", "sought", "liked"]
 
 stverbs :: [String]
 stverbs = ["believes", "thinks", "believe", "think", "believed", "thought"]
