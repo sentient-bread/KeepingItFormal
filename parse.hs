@@ -19,7 +19,19 @@ parseSent n lex@(v:vs) | v `elem` smads
                           = case (parseTmS n lex) of
                                 Just (subj, i, ivrest)
                                  -> case (parseIV i ivrest) of
-                                      Just (iv, j, rest) -> Just ((F4 subj iv),
+                                      Just (iv, j, rest, tense, neg)
+                                         -> case (tense, neg) of 
+                                              ("pres", False) -> Just ((F4 subj iv),
+                                                                   j, rest)
+                                              ("pres", True) -> Just ((F12 subj iv),
+                                                                   j, rest)
+                                              ("futr", False) -> Just ((F13 subj iv),
+                                                                   j, rest)
+                                              ("futr", True) -> Just ((F14 subj iv),
+                                                                   j, rest)
+                                              ("past", False) -> Just ((F15 subj iv),
+                                                                   j, rest)
+                                              ("past", True) -> Just ((F16 subj iv),
                                                                    j, rest)
                                       Nothing -> Nothing
                                 Nothing -> Nothing
@@ -98,37 +110,56 @@ parseTmO n lex = case (parseSTmO n lex) of
                        _ -> Just (term, i, rest)
                  Nothing -> Nothing
 
-parseSIV :: Int -> [String] -> Maybe (Eng, Int, [String])
+parseSIV :: Int -> [String] -> Maybe (Eng, Int, [String], String, Bool)
 -- simple intrans. verbs
 parseSIV n lex@(v:vs)
-    | v `elem` iverbs  = Just (IV v, n, vs)
-    | v `elem` tverbs  = case (parseTmO n vs) of
-                           Just (obj, i, rest) -> Just (F5 (TV v) obj,
-                                                         i, rest)
-    | v `elem` stverbs = case (parseT n $ tail vs) of
-                           Just (comp, i, rest) -> Just (F6 (StV v) comp,
-                                                             i, rest)
-    | v `elem` itverbs = case (parseIV n $ tail vs) of
-                           Just (comp, i, rest) -> Just (F6 (ItV v) comp,
-                                                         i, rest)
-    | otherwise = Nothing
+    | v == "will"      = if (vs /= [] && head vs == "not")
+                         then let Just (iv, i, rest) = getVb (tail vs)
+                              in Just (iv, i, rest, "futr", True)
+                         else let Just (iv, i, rest) = getVb vs
+                              in Just (iv, i, rest, "futr", False)
+    | v == "has" || v == "have"
+                       = if (vs /= [] && head vs == "not")
+                         then let Just (iv, i, rest) = getVb (tail vs)
+                              in Just (iv, i, rest, "past", True)
+                         else let Just (iv, i, rest) = getVb vs
+                              in Just (iv, i, rest, "past", False)
+    | v == "does" || v == "do"
+                       = if (vs /= [] && head vs == "not")
+                         then let Just (iv, i, rest) = getVb (tail vs)
+                              in Just (iv, i, rest, "pres", True)
+                         else let Just (iv, i, rest) = getVb vs
+                              in Just (iv, i, rest, "pres", False)
+    | otherwise        = let Just (iv, i, rest) = getVb lex
+                         in Just (iv, i, rest, "pres", False)
+      where getVb (v:vs) | v `elem` iverbs  = Just (IV v, n, vs)
+                         | v `elem` tverbs  = case (parseTmO n vs) of
+                                               Just (obj, i, rest) -> Just (F5 (TV v) obj,
+                                                                            i, rest)
+                         | v `elem` stverbs = case (parseT n $ tail vs) of
+                                               Just (comp, i, rest) -> Just (F6 (StV v) comp,
+                                                                             i, rest)
+                         | v `elem` itverbs = case (parseIV n $ tail vs) of
+                                               Just (comp, i, rest, _, _) -> Just (F6 (ItV v) comp,
+                                                                             i, rest)
+                         | otherwise = Nothing
 
-parseIV :: Int -> [String] -> Maybe (Eng, Int, [String])
+parseIV :: Int -> [String] -> Maybe (Eng, Int, [String], String, Bool)
 -- compound intrans. verbs, advs
 parseIV n lex = case (parseSIV n lex) of
-                  Just (iv, i, rest)
+                  Just (iv, i, rest, t, n)
                     -> case rest of
                         ("and":rem) -> case (parseSIV i rem) of
-                                        Just (oth,j,r) -> Just (F8 iv oth,
-                                                                j, r)
-                                        Nothing -> Just (iv, i, rest)
+                                        Just (oth,j,r,_,_) -> Just (F8 iv oth,
+                                                                       j, r, t, n)
+                                        Nothing -> Just (iv, i, rest, t, n)
                         ("or":rem) -> case (parseSIV i rem) of
-                                        Just (oth,j,r) -> Just (F9 iv oth,
-                                                                j, r)
-                                        Nothing -> Just (iv, i, rest)
+                                        Just (oth,j,r,_,_) -> Just (F9 iv oth,
+                                                                       j, r, t, n)
+                                        Nothing -> Just (iv, i, rest, t, n)
                         _ -> case (parseIAV i rest) of
-                               Just (iav, j, rem) -> Just (F7 iav iv, j, rem)
-                               Nothing -> Just (iv, i, rest)
+                               Just (iav, j, rem) -> Just (F7 iav iv, j, rem, t, n)
+                               Nothing -> Just (iv, i, rest, t, n)
                   Nothing -> Nothing
 
 parseIAV :: Int -> [String] -> Maybe (Eng, Int, [String])
@@ -205,16 +236,16 @@ smads :: [String]
 smads = ["necessarily", "possibly"]
 
 iverbs :: [String]
-iverbs = ["talks", "walks", "talk", "walk"]
+iverbs = ["talks", "walks", "talk", "walk", "talked", "walked"]
 
 tverbs :: [String]
-tverbs = ["sees", "seeks", "likes", "see", "seek", "like"]
+tverbs = ["sees", "seeks", "likes", "see", "seek", "like", "seen", "sought", "liked"]
 
 stverbs :: [String]
-stverbs = ["believes", "thinks"]
+stverbs = ["believes", "thinks", "believe", "think", "believed", "thought"]
 
 itverbs :: [String]
-itverbs = ["tries", "attempts"]
+itverbs = ["tries", "attempts", "try", "attempt", "tried", "failed"]
 
 advs :: [String]
 advs = ["slowly", "rapidly"]
