@@ -81,9 +81,7 @@ g _ = Indv ""
 type Model = ([Denot], [World], [Time], LExpr -> Denot)
            -- (A,       I,       J,       F)
 
-eval :: LExpr -> Model -> VarAssmt -> Index -> Denot -- evaluate in model
-eval _ _ _ _ = Indv ""
---------------------
+
 
 -- Hardcode (p. 133-34) --
 m :: Model
