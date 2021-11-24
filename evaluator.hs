@@ -11,6 +11,9 @@ eval (LVar var) model g index = g var
 
 --- Rule 3:
 
---- Rule 4:
-eval (Appl alpha beta) model g index = (eval alpha model g index) (eval beta model g index)
 
+--- Rule 4:
+eval (Appl alpha beta) model g index = func (eval beta model g index)
+                                where Func func = eval alpha model g index
+
+--- Rule 5:
