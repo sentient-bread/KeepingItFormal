@@ -1,4 +1,4 @@
-import AllTypes ( Model, VarAssmt, LExpr (LCon), Denot(Indv), Index ) 
+import AllTypes
 
 eval :: LExpr -> Model -> VarAssmt -> Index -> Denot -- evaluate in model
 
@@ -6,7 +6,7 @@ eval :: LExpr -> Model -> VarAssmt -> Index -> Denot -- evaluate in model
 eval (LCon con) model g index = (f con ) ((fst index) (snd index))
 
 --- Rule 2: 
-eval (LVar var) model g index = g var
+eval (LVar var) model g index = g (LVar var)
 
 
 --- Rule 3:
@@ -17,7 +17,7 @@ eval (Appl alpha beta) model g index = func (eval beta model g index)
                                 where Func func = eval alpha model g index
 
 --- Rule 5:
-eval (Eqp alpha beta) model g index
+eval (Eql alpha beta) model g index
     | (int_alpha == int_beta) = TVal True 
     | otherwise = TVal False
     where int_alpha = eval alpha model g index
@@ -30,7 +30,7 @@ eval (Not phi) model g index
 
 --- Rule 7 (and):
 eval (And phi psy) model g index
-    | int_phi_truth && int_psy_true == True = TVal True
+    | int_phi_truth && int_psy_truth == True = TVal True
     | otherwise = TVal False 
     where TVal int_phi_truth = eval phi model g index
           TVal int_psy_truth = eval phi model g index
