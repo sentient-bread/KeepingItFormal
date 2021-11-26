@@ -141,3 +141,14 @@ f (LCon "b") = Ints $ \(w,t) -> case (w,t) of
 --                      (LCon "j")))
 --          (Intn (LCon "walk")))
 --------------
+
+
+--- Helper functions
+
+--- or's a list of TVal's
+orTValList :: [Denot] -> Denot
+orTValList [] = TVal False
+orTValList (x:xs) = TVal(bool_x || bool_tail)
+    where TVal bool_x = x
+          TVal bool_tail = orTValList xs
+
