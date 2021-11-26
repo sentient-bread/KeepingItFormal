@@ -3,7 +3,8 @@ import AllTypes
 eval :: LExpr -> Model -> VarAssmt -> Index -> Denot -- evaluate in model
 
 --- Rule 1:
-eval (LCon con) model g index = (f con ) ((fst index) (snd index))
+eval l@(LCon con) model g index = int_func  ((fst index), (snd index))
+                                    where Ints int_func = (f l)
 
 --- Rule 2: 
 eval (LVar var) model g index = g (LVar var)
@@ -25,7 +26,7 @@ eval (Eql alpha beta) model g index
 
 --- Rule 6:
 eval (Not phi) model g index
-    | eval phi model g index == 0 = TVal True
+    | eval phi model g index == TVal False = TVal True
     | otherwise = TVal True
 
 --- Rule 7 (and):
@@ -55,3 +56,10 @@ eval (Eqv phi psy) model g index
     | otherwise = TVal False
     where TVal fwd_implication = eval (Impl phi psy) model g index
           TVal bcwd_implication = eval (Impl psy phi) model g index 
+
+--- Rule 14:
+eval (Futr phi) model g index
+    | orTValList [eval phi model g ((fst index), t') 
+                   | t' <- time_list_model, t' > (snd index)] == TVal True = TVal True
+    | otherwise = TVal False
+    where (_, _, time_list_model, _) = model 
