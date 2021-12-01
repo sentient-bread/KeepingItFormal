@@ -120,3 +120,57 @@ find "a"       = Lmbd (LVar 'P')
 find "necessarily" = Lmbd (LVar 'p')
                           (Necs (Extn (LVar 'p')))
 find "in"      = LCon "in"
+
+simplify' :: LExpr -> LExpr
+-- Intension is the "right inverse" of extension
+simplify' (Extn (Intn a)) = (simplify' a)
+-- Recursive simplification rules
+simplify' (Appl (Lmbd (LVar x) body) y) = simplify' $ replace x y body
+simplify' (Appl a b) = Appl (simplify' a) (simplify' b)
+simplify' (Lmbd a b) = Lmbd (simplify' a) (simplify' b)
+simplify' (Eql a b)  = Eql (simplify' a) (simplify' b)
+simplify' (Not a) = Not (simplify' a)
+simplify' (And a b)  = And (simplify' a) (simplify' b)
+simplify' (Or a b)   = Or (simplify' a) (simplify' b)
+simplify' (Eqv a b)  = Eqv (simplify' a) (simplify' b)
+simplify' (Impl a b) = Impl (simplify' a) (simplify' b)
+simplify' (Forall a b) = Forall (simplify' a) (simplify' b)
+simplify' (Exists a b) = Exists (simplify' a) (simplify' b)
+simplify' (Necs a) = Necs (simplify' a)
+simplify' (Futr a) = Futr (simplify' a)
+simplify' (Past a) = Past (simplify' a)
+simplify' (Intn a) = Intn (simplify' a)
+simplify' (Extn a) = Extn (simplify' a)
+simplify' terminal = terminal
+
+-- If there are multiple Apples nested on the outside, then
+-- simplify' once is not sufficient; we must apply repeatedly till there
+-- can be no further simplification
+fixpoint :: (Eq a) => (a -> a) -> a -> a
+fixpoint f p = until (\l -> l == f l) f p
+
+simplify :: LExpr -> LExpr
+simplify p = fixpoint simplify' p
+
+-- replacement also needs to be recursive in order to traverse
+-- the AST and find the appropriate terminal to replace
+replace :: Char -> LExpr -> LExpr -> LExpr
+replace x y body = case body of
+                     (LVar a)
+                       |  a == x          -> y
+                       |  otherwise       -> body
+                     (Appl a b)        -> Appl (replace x y a) (replace x y b)
+                     (Lmbd a b)        -> Lmbd a (replace x y b)
+                     (Eql a b)         -> Eql (replace x y a) (replace x y b)
+                     (Not a)           -> Not (replace x y a)
+                     (And a b)         -> And (replace x y a) (replace x y b)
+                     (Or a b)          -> Or (replace x y a) (replace x y b)
+                     (Eqv a b)         -> Eqv (replace x y a) (replace x y b)
+                     (Impl a b)        -> Impl (replace x y a) (replace x y b)
+                     (Forall a b)      -> Forall (replace x y a) (replace x y b)
+                     (Exists a b)      -> Exists (replace x y a) (replace x y b)
+                     (Necs a)          -> Necs (replace x y a)
+                     (Futr a)          -> Futr (replace x y a)
+                     (Intn a)          -> Intn (replace x y a)
+                     (Extn a)          -> Extn (replace x y a)
+                     terminal          -> terminal
