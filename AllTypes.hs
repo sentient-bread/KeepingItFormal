@@ -54,6 +54,21 @@ data Denot = Indv String           -- individual  (e)
            | Func (Denot -> Denot) -- lambdas     (a -> b)
            | Ints (S -> Denot)     -- intensions  (s -> a)
 
+---eqlDenot :: Denot -> Denot -> Bool
+instance Eq Denot where
+      (==) (Indv s1) (Indv s2) 
+            | s1 == s2 = True
+            | otherwise = False
+      (==) (TVal b1) (TVal b2) 
+            | b1 == b2 = True
+            | otherwise = False
+
+
+--- function to check for equivalence of denotations 
+--- doesn't check for function types because it can't 
+--- doesn't check for intensions because it'll require evaluation 
+--- therefore that is dealt with in the evaluator itself
+
 data LExpr = LCon String | LVar Char -- constants and vars (any)
            | Lmbd LExpr LExpr        -- lambda expr        (a -> b)
            | Appl LExpr LExpr        -- application        (any)
