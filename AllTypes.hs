@@ -167,3 +167,8 @@ orTValList (x:xs) = TVal(bool_x || bool_tail)
     where TVal bool_x = x
           TVal bool_tail = orTValList xs
 
+andTValList :: [Denot] -> Denot
+andTVAlList [] = TVal False
+andTValList (x:xs) = TVal(bool_x && bool_tail)
+      where TVal bool_x = x
+            TVal bool_tail = orTValList xs

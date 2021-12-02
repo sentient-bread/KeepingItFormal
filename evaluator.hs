@@ -75,9 +75,47 @@ eval (Eqv phi psy) model g index
     where TVal fwd_implication = eval (Impl phi psy) model g index
           TVal bcwd_implication = eval (Impl psy phi) model g index 
 
+--- Rule 11
+eval (Forall (LVar u) phi) model g index
+    | andTValList [eval phi model g' index | g' <- list_of_g] == TVal True = TVal True
+    | otherwise = TVal False
+    where list_of_g = [\(LVar u') -> if (u' == u) then ind else (g (LVar u')) | ind <- individual_list]
+          (individual_list, _, _, _) = model 
+
+--- Rule 12
+eval (Exists (LVar u) phi) model g index
+    | orTValList [eval phi model g' index | g' <- list_of_g] == TVal True = TVal True
+    | otherwise = TVal False
+    where list_of_g = [\(LVar u') -> if (u' == u) then ind else (g (LVar u')) | ind <- individual_list]
+          (individual_list, _, _, _) = model 
+
+--- Rule 13
+eval (Necs phi) model g index
+    | andTValList [eval phi model g (w, t) | t <- times, w <- worlds] == TVal True = TVal True
+    | otherwise = TVal False
+    where (_, worlds, times, _) = model
+
 --- Rule 14:
 eval (Futr phi) model g index
     | orTValList [eval phi model g ((fst index), t') 
                    | t' <- time_list_model, t' > (snd index)] == TVal True = TVal True
     | otherwise = TVal False
     where (_, _, time_list_model, _) = model 
+
+
+--- Rule 15
+eval (Past phi) model g index
+    | orTValList [eval phi model g ((fst index), t')
+                    | t' <- time_list_model, t' < (snd index)] == TVal True = TVal True
+    | otherwise = TVal False
+    where(_, _, time_list_model, _) = model
+
+-- --- Rule 16
+-- eval (Intn alpha) model g index
+--     --- the Intn is a constructor of LExpr above
+
+--- Rule 17
+eval (Extn alpha) model g index = ints_alpha index
+    where Ints ints_alpha = eval alpha model g index
+
+eval _ _ _ _ = Indv "I am awesome"
