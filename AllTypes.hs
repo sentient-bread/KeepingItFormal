@@ -54,6 +54,21 @@ data Denot = Indv String           -- individual  (e)
            | Func (Denot -> Denot) -- lambdas     (a -> b)
            | Ints (S -> Denot)     -- intensions  (s -> a)
 
+---eqlDenot :: Denot -> Denot -> Bool
+instance Eq Denot where
+      (==) (Indv s1) (Indv s2) 
+            | s1 == s2 = True
+            | otherwise = False
+      (==) (TVal b1) (TVal b2) 
+            | b1 == b2 = True
+            | otherwise = False
+
+
+--- function to check for equivalence of denotations 
+--- doesn't check for function types because it can't 
+--- doesn't check for intensions because it'll require evaluation 
+--- therefore that is dealt with in the evaluator itself
+
 data LExpr = LCon String | LVar Char -- constants and vars (any)
            | Lmbd LExpr LExpr        -- lambda expr        (a -> b)
            | Appl LExpr LExpr        -- application        (any)
@@ -127,9 +142,7 @@ g _ = Indv ""
 type Model = ([Denot], [World], [Time], LExpr -> Denot)
            -- (A,       I,       J,       F)
 
-eval :: LExpr -> Model -> VarAssmt -> Index -> Denot -- evaluate in model
-eval _ _ _ _ = Indv ""
---------------------
+
 
 -- Hardcode (p. 133-34) --
 m :: Model
@@ -189,3 +202,19 @@ f (LCon "b") = Ints $ \(w,t) -> case (w,t) of
 --                      (LCon "j")))
 --          (Intn (LCon "walk")))
 --------------
+
+
+--- Helper functions
+
+--- or's a list of TVal's
+orTValList :: [Denot] -> Denot
+orTValList [] = TVal False
+orTValList (x:xs) = TVal(bool_x || bool_tail)
+    where TVal bool_x = x
+          TVal bool_tail = orTValList xs
+
+andTValList :: [Denot] -> Denot
+andTVAlList [] = TVal False
+andTValList (x:xs) = TVal(bool_x && bool_tail)
+      where TVal bool_x = x
+            TVal bool_tail = orTValList xs
