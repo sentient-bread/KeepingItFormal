@@ -1,3 +1,5 @@
+module Evaluator where
+
 import AllTypes
 
 eqlIntension :: Denot -> Denot -> Model -> Bool
