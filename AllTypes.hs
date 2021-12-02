@@ -86,51 +86,27 @@ data LExpr = LCon String | LVar Char -- constants and vars (any)
 -- f :: LExpr -> Denot
 -- [only for constants -> intensions; see hardcode]
 
-show' :: Int -> LExpr -> String
-show' i l@(LCon x) = (replicate i ' ') ++ "(LCon \"" ++ x ++ "\")"
-show' i l@(LVar x) = (replicate i ' ') ++ "(LVar \'" ++ [x] ++ "\')"
-show' i l@(Lmbd v b) = (replicate i ' ') ++ "(Lmbd\n"
-                       ++ (show' (i+2) v) ++ "\n"
-                       ++ (show' (i+2) b) ++ ")"
-show' i l@(Appl f x) = (replicate i ' ') ++ "(Appl\n"
-                       ++ (show' (i+2) f) ++ "\n"
-                       ++ (show' (i+2) x) ++ ")"
-show' i l@(Eql x b) = (replicate i ' ') ++ "(Eql\n"
-                      ++ (show' (i+2) x) ++ "\n"
-                      ++ (show' (i+2) b) ++ ")"
-show' i l@(Not x) = (replicate i ' ') ++ "(Not\n"
-                    ++ (show' (i+2) x) ++ ")"
-show' i l@(And x b) = (replicate i ' ') ++ "(And\n"
-                      ++ (show' (i+2) x) ++ "\n"
-                      ++ (show' (i+2) b) ++ ")"
-show' i l@(Or x b) = (replicate i ' ') ++ "(Or\n"
-                     ++ (show' (i+2) x) ++ "\n"
-                     ++ (show' (i+2) b) ++ ")"
-show' i l@(Eqv x b) = (replicate i ' ') ++ "(Eqv\n"
-                      ++ (show' (i+2) x) ++ "\n"
-                      ++ (show' (i+2) b) ++ ")"
-show' i l@(Impl x b) = (replicate i ' ') ++ "(Impl\n"
-                       ++ (show' (i+2) x) ++ "\n"
-                       ++ (show' (i+2) b) ++ ")"
-show' i l@(Forall v b) = (replicate i ' ') ++ "(Forall\n"
-                         ++ (show' (i+2) v) ++ "\n"
-                         ++ (show' (i+2) b) ++ ")"
-show' i l@(Exists v b) = (replicate i ' ') ++ "(Exists\n"
-                         ++ (show' (i+2) v) ++ "\n"
-                         ++ (show' (i+2) b) ++ ")"
-show' i l@(Necs x) = (replicate i ' ') ++ "(Necs\n"
-                    ++ (show' (i+2) x) ++ ")"
-show' i l@(Futr x) = (replicate i ' ') ++ "(Futr\n"
-                    ++ (show' (i+2) x) ++ ")"
-show' i l@(Past x) = (replicate i ' ') ++ "(Past\n"
-                    ++ (show' (i+2) x) ++ ")"
-show' i l@(Intn x) = (replicate i ' ') ++ "(Intn\n"
-                    ++ (show' (i+2) x) ++ ")"
-show' i l@(Extn x) = (replicate i ' ') ++ "(Extn\n"
-                    ++ (show' (i+2) x) ++ ")"
+show' :: LExpr -> String
+show' (LCon x)      = x
+show' (LVar x)      = [x]
+show' (Lmbd x y)    = concat [ "λ", show' x,  "[", show' y, "]" ]
+show' (Appl x y)    = concat [ show' x, "(", show' y, ")" ]
+show' (Eql x y)     = concat [ show' x, "=", show' y ]
+show' (Not x)       = concat [ "¬", show' x ]
+show' (And x y)     = concat [ show' x, "∧", show' y ]
+show' (Or x y)      = concat [ show' x, "∨", show' y ]
+show' (Eqv x y)     = concat [ show' x, "↔", show' y ]
+show' (Impl x y)    = concat [ show' x, "→", show' y ]
+show' (Forall x y)  = concat [ "∀", show' x, "[", show' y, "]" ]
+show' (Exists x y)  = concat [ "∃", show' x, "[", show' y, "]" ]
+show' (Necs x)      = concat [ "□", "[", show' x, "]"]
+show' (Futr x)      = concat [ "\\e[1mF\\e[0m", "[", show' x, "]" ]
+show' (Past x)      = concat [ "\\e[1mP\\e[0m", "[", show' x, "]" ]
+show' (Intn x)      = concat [ "^", "[", show' x, "]" ]
+show' (Extn x)      = concat [ "ˇ", "[", show' x, "]" ]
 
 instance Show LExpr where
-  show x = show' 0 x
+  show x = show' x
 
 type VarAssmt = LExpr -> Denot -- variables -> extensions
 
