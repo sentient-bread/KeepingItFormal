@@ -1,6 +1,7 @@
 module Evaluator where
 
 import AllTypes
+import Model
 
 eqlIntension :: Denot -> Denot -> Model -> Bool
 eqlIntension (Ints a1) (Ints a2) model
@@ -28,7 +29,7 @@ eval (Lmbd (LVar u) alpha) model g index
 
 
 --- Rule 4:
-eval (Appl alpha beta) model g index = func (eval beta model g index)
+eval (Appl alpha beta) model g index = func (Ints $ eval beta model g)
                                 where Func func = eval alpha model g index
 
 --- Rule 5:
