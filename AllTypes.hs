@@ -62,6 +62,9 @@ instance Eq Denot where
       (==) (TVal b1) (TVal b2) 
             | b1 == b2 = True
             | otherwise = False
+instance Show Denot where
+      show (Indv x) = x
+      show (TVal t) = show t
 
 
 --- function to check for equivalence of denotations 
@@ -109,63 +112,19 @@ instance Show LExpr where
   show x = show' x
 
 type VarAssmt = LExpr -> Denot -- variables -> extensions
-
-g :: VarAssmt
-g _ = Indv ""
 -----------------------
 
 -- Interpretation --
 type Model = ([Denot], [World], [Time], LExpr -> Denot)
            -- (A,       I,       J,       F)
 
-
-
 -- Hardcode (p. 133-34) --
-m :: Model
-m = (a,i,j,f)
-
-a :: [Denot]
-a = [Indv "a", Indv "b", Indv "c"]
-
 i :: [World]
 i = [W 1, W 2]
 
 j :: [Time]
-j = [T 1, T 2, T 3]
+j = [T 1, T 2]
 
-f :: LExpr -> Denot
-f (LCon "j") = Ints $ \(_,_) -> Indv "a"
-f (LCon "d") = Ints $ \(_,_) -> Indv "b"
-f (LCon "n") = Ints $ \(_,_) -> Indv "c"
-f (LCon "m") = Ints $ \(w,t) -> case (w,t) of
-                  (W 1, T 1) -> Indv "a"
-                  (W 1, T 2) -> Indv "b"
-                  (W 1, T 3) -> Indv "c"
-                  (W 2, T 1) -> Indv "c"
-                  (W 2, T 2) -> Indv "c"
-                  (W 2, T 3) -> Indv "b"
-f (LCon "b") = Ints $ \(w,t) -> case (w,t) of
-                  (W 1, T 1) -> Func (\e -> case e of
-                                  Indv "a" -> TVal True
-                                  Indv "b" -> TVal True
-                                  _        -> TVal False)
-                  (W 1, T 2) -> Func (\e -> case e of
-                                  Indv "a" -> TVal True
-                                  Indv "c" -> TVal True
-                                  _        -> TVal False)
-                  (W 1, T 3) -> Func (\e -> case e of
-                                  Indv "b" -> TVal True
-                                  Indv "c" -> TVal True
-                                  _        -> TVal False)
-                  (W 2, T 1) -> Func (\e -> case e of
-                                  Indv "b" -> TVal True
-                                  Indv "c" -> TVal True
-                                  _        -> TVal False)
-                  (W 2, T 2) -> Func (\e -> case e of
-                                  Indv "a" -> TVal True
-                                  _        -> TVal False)
-                  (W 2, T 3) -> Func (\e -> case e of
-                                  _        -> TVal True)
 --------------------------
 
 -- Examples --
