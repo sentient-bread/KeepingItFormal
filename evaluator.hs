@@ -21,6 +21,8 @@ eval (LVar var) model g index = g (LVar var)
 
 
 --- Rule 3:
+eval (Lmbd (LVar u) alpha) model g index 
+    = Func (\x -> eval alpha model (\(LVar u') -> if u' == u then x else g (LVar u')) index) 
 
 
 --- Rule 4:
