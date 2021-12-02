@@ -123,7 +123,7 @@ find "in"      = LCon "in"
 
 simplify' :: LExpr -> LExpr
 -- Intension is the "right inverse" of extension
-simplify' (Extn (Intn a)) = (simplify' a)
+simplify' (Extn (Appl (Intn x) y)) = Appl (simplify' x) (simplify' y)
 -- Recursive simplification rules
 simplify' (Appl (Lmbd (LVar x) body) y) = simplify' $ replace x y body
 simplify' (Appl a b) = Appl (simplify' a) (simplify' b)
