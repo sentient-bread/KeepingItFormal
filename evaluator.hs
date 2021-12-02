@@ -120,4 +120,4 @@ eval (Past phi) model g index
 eval (Extn alpha) model g index = ints_alpha index
     where Ints ints_alpha = eval alpha model g index
 
-eval _ _ _ _ = Indv "I am awesome"
+eval _ _ _ _ = Indv ""
