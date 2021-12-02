@@ -114,9 +114,9 @@ eval (Past phi) model g index
     | otherwise = TVal False
     where(_, _, time_list_model, _) = model
 
--- --- Rule 16
--- eval (Intn alpha) model g index
---     --- the Intn is a constructor of LExpr above
+--- Rule 16
+eval (Intn alpha) model g index 
+    = Ints(\index' -> eval alpha model g index') 
 
 --- Rule 17
 eval (Extn alpha) model g index = ints_alpha index
