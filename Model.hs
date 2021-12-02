@@ -63,9 +63,26 @@ f (LCon "talk") = Ints $ (\(w,t) -> case (w,t) of
                                    Indv "m" -> TVal False
                                    Indv "b" -> TVal False)
                    (W 2, T 2) -> Func (\(Ints i) -> case (i (W 2, T 2)) of
-                                   Indv "j" -> TVal False
+                                   Indv "j" -> TVal True
                                    Indv "m" -> TVal False
                                    Indv "b" -> TVal True))
+f (LCon "walk") = Ints $ (\(w,t) -> case (w,t) of
+                   (W 1, T 1) -> Func (\(Ints i) -> case (i (W 1, T 1)) of
+                                   Indv "j" -> TVal False
+                                   Indv "m" -> TVal True
+                                   Indv "b" -> TVal False)
+                   (W 1, T 2) -> Func (\(Ints i) -> case (i (W 1, T 2)) of
+                                   Indv "j" -> TVal True
+                                   Indv "m" -> TVal False
+                                   Indv "b" -> TVal False)
+                   (W 2, T 1) -> Func (\(Ints i) -> case (i (W 2, T 1)) of
+                                   Indv "j" -> TVal False
+                                   Indv "m" -> TVal True
+                                   Indv "b" -> TVal True)
+                   (W 2, T 2) -> Func (\(Ints i) -> case (i (W 2, T 2)) of
+                                   Indv "j" -> TVal True
+                                   Indv "m" -> TVal True
+                                   Indv "b" -> TVal False))
 f (LCon "see") = Ints $ (\(w,t) -> case (w,t) of
                    (W 1, T 1) -> Func (\(Ints i) -> case (i (W 1, T 1)) of
                                    Indv "j" -> Func (\(Ints j) -> case (j (W 1, T 1)) of
