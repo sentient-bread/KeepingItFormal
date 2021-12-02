@@ -79,11 +79,15 @@ isSent  _          = False
 
 find :: String -> LExpr -- constants
 find "John"    = LCon "j"
+find "Mary"    = LCon "m"
+find "Bill"    = LCon "b"
 find "man"     = LCon "man"
 find "woman"   = LCon "woman"
 find "unicorn" = LCon "uni"
 find "talks"   = LCon "talk"
 find "talk"    = LCon "talk"
+find "walks"   = LCon "walk"
+find "walk"    = LCon "walk"
 find "sees"    = LCon "see"
 find "see"     = LCon "see"
 find "be"      = Lmbd (LVar 'P')
