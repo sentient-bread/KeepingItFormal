@@ -1,5 +1,15 @@
 import AllTypes
 
+eqlIntension :: Denot -> Denot -> Model -> Bool
+eqlIntension (Ints a1) (Ints a2) model
+      | orTValList [TVal ((a1 (w, t)) == (a2 (w, t)))
+        | t <- time_list_model, w <- world_list_model ] == TVal True = True
+      | otherwise = False
+      where (_, _, time_list_model, _) = model
+            (_, world_list_model, _, _) = model
+
+
+
 eval :: LExpr -> Model -> VarAssmt -> Index -> Denot -- evaluate in model
 
 --- Rule 1:
@@ -19,10 +29,18 @@ eval (Appl alpha beta) model g index = func (eval beta model g index)
 
 --- Rule 5:
 eval (Eql alpha beta) model g index
-    | (int_alpha == int_beta) = TVal True 
+    | let Indv str_alpha = eval_alpha
+          Indv str_beta = eval_beta
+        in (str_alpha == str_beta) = TVal True
+    | let TVal b1 = eval_alpha
+          TVal b2 = eval_beta
+        in (b1 == b2) = TVal True
+    | let Ints b1 = eval_alpha
+          Ints b2 = eval_beta
+        in(eqlIntension eval_alpha eval_beta model) == True = TVal True
     | otherwise = TVal False
-    where int_alpha = eval alpha model g index
-          int_beta = eval beta model g index
+    where eval_alpha = eval alpha model g index
+          eval_beta = eval beta model g index
 
 --- Rule 6:
 eval (Not phi) model g index
