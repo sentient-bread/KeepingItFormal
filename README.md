@@ -6,8 +6,8 @@ Project for the Computational Linguistics – 2 course at IIIT Hyderabad. An imp
 - [ ] Documentation generation
 - [x] Parse negation, tenses
 - [X] Simplify IL expressions
-- [ ] Evaluator
-- [ ] Hardcode model
+- [X] Evaluator
+- [X] Hardcode model
 
 # Legend
 The types used in the description of English syntax and their symbols are:
