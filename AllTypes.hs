@@ -93,6 +93,7 @@ show' :: LExpr -> String
 show' (LCon x)      = x
 show' (LVar x)      = [x]
 show' (Lmbd x y)    = concat [ "λ", show' x,  "[", show' y, "]" ]
+show' (Appl (Appl a x) y) = concat [ show' a, "(", show' y, ",", show' x, ")" ]
 show' (Appl x y)    = concat [ show' x, "(", show' y, ")" ]
 show' (Eql x y)     = concat [ show' x, "=", show' y ]
 show' (Not x)       = concat [ "¬", show' x ]
